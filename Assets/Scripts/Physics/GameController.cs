@@ -5,12 +5,14 @@ using System.Numerics;
 
 public static class GameController
 {
+    private static int score;
     private static string gameOverText;
     private static DateTime spawnWaitStart;
     private static TimeSpan spawnWait;
     private static bool isWaitingForSpawn;
     private static List<Physics> ThreatsList;
     private static List<Physics> BulletsList;
+
     public static PlayerPhysics player { get; private set; }
     public static bool isGameOver { get; private set; }
     public static string XCoorditaneText { get; private set; }
@@ -26,8 +28,7 @@ public static class GameController
 
     public static void Awake()
     {
-        isGameOver = false;
-        gameOverText = "GAME OVER!\nPRESS SPACE TO RESTART";
+        isGameOver = false;        
         player = new PlayerPhysics(0.1f, 0.1f, 0, 0);
         player.onOnInstantiateCallback += AsteroidGame.S.PlayerSpawn;
         onGameOverEvent += AsteroidGame.S.GameOver;
@@ -59,10 +60,12 @@ public static class GameController
             }
         }
         player.onOnInstantiateCallback(player, player.GetPosition());
+        score = 0;
     }
 
     public static void Update()
     {
+        UnityEngine.Debug.Log(score);
         if (!isGameOver)
         {
             XCoorditaneText = "X: " + player.GetPosition().X.ToString("0.##");
@@ -177,6 +180,7 @@ public static class GameController
                         RemoveBullet(bullet);
                     }
                     threat.Destroy();
+                    score = score + 10;
                     return true;
                 }
             }
@@ -240,6 +244,7 @@ public static class GameController
         {
             player.onDestroyCallback(   );
         }
+        gameOverText = $"GAME OVER!\nYOUR SCORE IS {score}\nPRESS SPACE TO RESTART";
         onGameOverEvent(gameOverText);
         isGameOver = true;
     }
